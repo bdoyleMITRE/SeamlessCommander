@@ -1,0 +1,61 @@
+{
+    "inputs":{
+        "activityType":"Monitoring",
+        "dataSource":"World Population Data Feed",
+        "relevantFields":[{
+            "name":"name",
+            "measure":"nominal",
+            "criticality":"high",
+            "availability":"known"
+        },
+
+        {
+            "name":"population",
+            "measure":"quantitative",
+            "criticality":"high",
+            "availability":"known"
+        },
+
+        {
+            "name":"lifeExpectancy",
+            "measure":"quantitative",
+            "criticality":"high",
+            "availability":"known"
+        }]
+    },
+    "visRecommendations":
+    [{
+        "widget_name":"MITRE.CIV",
+        "dataURI":"https://localhost:8443/ComposableInformationVisualization/json/nations.json",//http://localhost:8080/cra/impl/WorldPopDataFeedAdaptor/CraInstanceServlet?requestType=getLatestDataItem",
+        "visualizationProperties":{
+            "visualizationId":"d3.scatterPlot",
+            "visualizationMappings":[{
+                "elementName":"Label",
+                "fieldName":"name"
+            },{
+                "elementName":"Mark X Position",
+                "fieldName":"population"
+            },{
+                "elementName":"Mark Y Position",
+                "fieldName":"lifeExpectancy"
+            }]
+        }
+    },
+    {
+        "widget_name":"MITRE.CIV", 
+        "dataURI":"https://localhost:8443/ComposableInformationVisualization/json/nations.json",//"http://localhost:8080/cra/impl/WorldPopDataFeedAdaptor/CraInstanceServlet?requestType=getLatestDataItem",
+        "visualizationProperties":{
+            "visualizationId":"nvd3.barGraph",
+            "visualizationMappings":[{
+                "elementName":"Label",
+                "fieldName":"name"
+            },{
+                "elementName":"Bar Series",
+                "fieldName":"population"
+            },{
+                "elementName":"Bar Series",
+                "fieldName":"lifeExpectancy"
+            }]
+        }
+    }]
+}

@@ -1,0 +1,43 @@
+.dashpicker_btn_img {
+    background-image: url('../images/view.png') !important;
+}
+
+.alerts_btn_img {
+    background-image: url('../images/alert_empty.png') !important;
+}
+
+.toolbar_view{
+    padding:1px;
+}
+.content_view{
+}
+
+
+/*THEME DEFAULTS*/
+.x-panel-body-default{
+    background-color: #000;
+    color:#fff;
+}
+
+.x-btn-default-small{
+    background-color: #000;
+    color:#fff;
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    -o-border-radius: 0px;
+    -ms-border-radius: 0px;
+    -khtml-border-radius: 0px;
+    border-radius: 0px;
+    padding: 2px 2px 2px 2px;
+    border-width: 0px;
+    border-style: solid;
+    background-image: none;
+    background-color: #000;
+    /*
+    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #FFF), color-stop(48%, #F9F9F9), color-stop(52%, #E2E2E2), color-stop(100%, #E7E7E7));
+    background-image: -webkit-linear-gradient(top, #FFF,#F9F9F9 48%,#E2E2E2 52%,#E7E7E7);
+    background-image: -moz-linear-gradient(top, #ffffff,#f9f9f9 48%,#e2e2e2 52%,#e7e7e7);
+    background-image: -o-linear-gradient(top, #ffffff,#f9f9f9 48%,#e2e2e2 52%,#e7e7e7);
+    background-image: -ms-linear-gradient(top, #ffffff,#f9f9f9 48%,#e2e2e2 52%,#e7e7e7);
+    */
+}

@@ -1,0 +1,7 @@
+{
+    "success": true,
+    "dashboards": [
+        {"id": 1, "name": 'Sample',"guid": "f4a334dc-e334-46b5-af0b-e0e69ae359db"},
+        {"id": 2, "name": 'Admin', "guid": "8caf2e76-4f41-4bd7-a765-5764e792ff83"}
+    ]
+}
