@@ -12,7 +12,12 @@ Ext.define('SeamlessC2.controller.Manager', {
     'Manager.DashPickerView'
     ],
     dashboards:[], // stored in preferences and loaded
-    
+    system_widgets:[], //available widgets in the system
+    /*refs: [{
+        //wire up the btn to this controller
+        selector: 'dashpicker_createbtn', //view alias
+        ref: 'dashpickerCreate' //This will be used as part of the name of the getter that will be generated automatically getDashpickerCreate
+    }],*/
     onLaunch: function() {//fires after everything is loaded
         //handle the load of the dashboards
         this.loadDashboardStore();
@@ -22,38 +27,71 @@ Ext.define('SeamlessC2.controller.Manager', {
             callback: this.onAlertsStoreLoad,
             scope: this
         });
-         log("SeamlessC2 Commander Launch Complete");
+        log("SeamlessC2 Commander Launch Complete");
     },
-    
+    preInit:function(){
+        //When the Dashboard is created and the page is redirected to this with the widget minimized. But a refresh fixes it.
+        //So the dashboard_controller sets a value of new dashboard guid in user preference
+        //if that value is there, then this widget refreshes page and clears the pref
+        var st = this.getWidgetState();
+        var ow= Ext.JSON.decode(OWF.getIframeId());        
+        OWF.Preferences.getUserPreference(
+        {
+            namespace:'SeamlessC2.DashboardCreated', 
+            name:'guid',
+            onSuccess:function(pref){
+                log("Pref:",pref);
+                st.getWidgetState({
+                    callback: function(state) {
+                        log("State:",state);
+                        if(state.x<0 && window.parent.location.href.indexOf(pref.value) > 0){
+                            OWF.Preferences.setUserPreference(
+                            {
+                                namespace:'MITRE.DataSelector',
+                                name:'guid',
+                                value:'',
+                                onSuccess:function(pref){
+                                    window.parent.location.reload(true);
+                                },
+                                onFailure:function(a){
+                                    error("Set Preferences",a);
+                                }
+                            }
+                            );
+                        }
+                         
+                        if(!state.active){
+                            st.activateWidget({
+                                callback:function(isactivated){
+                                    log("Widget Activated",isactivated);
+                                }
+                            });                 
+                        }           
+                    }
+                });
+            }, 
+            onFailure:function(a){
+                error("Set Preferences",a);
+            }
+        }); 
+    },
     init: function() {
         var self = this;
+        this.preInit();
+        this.tailor_controller = this.getController('Tailor');
+        this.tailor_controller.init();
+        this.smartcow_controller = this.getController('SmartCow');
+        this.smartcow_controller.init();
         
-        /*
-        //load existing dashboards
-        var onSuccess = function(obj) {//obj.success obj.results obj.data
-            log("Dashboards", obj.results);
-            if (obj.results > 0) {
-                for (var i = 0; i < obj.results; i++) {
-                    log(obj.data[i].name);
-                }
+        this.control({ // listeners            
+            'dashpicker_createbtn': { //wire up the btn to this controller
+                click: self.onDashboardCreate  
             }
-        };           
-        var onFailure = function(error) {
-            alert(error);
-        };           
-        Ozone.pref.PrefServer.findDashboards({
-            onSuccess:onSuccess,
-            onFailure:onFailure
         });
-          */  
-            
-        /*this.control({
-            'toolbar': {
-        //itemdblclick: this.editUser
-        }
-        });*/
-        //s.load();
+    
         if(OWF.Util.isRunningInOWF()) {
+            this.updateOWFWidgetList(); // load the available widgets in system
+            
             // -----------------------------------
             // Add behaviour if widget is in OWF
             // -----------------------------------    
@@ -202,19 +240,22 @@ Ext.define('SeamlessC2.controller.Manager', {
 
        */
         
-            //this.updateOWFWidgetList(); // load the available widgets in system
+        
 
-            var st = this.getWidgetState();
-            var ow= Ext.JSON.decode(OWF.getIframeId());
+            //   var st = this.getWidgetState();
+            //   var ow= Ext.JSON.decode(OWF.getIframeId());
 
-            /* 
-        Ozone.eventing.getAllWidgets(function(widgetList){
-            var proxy = Ozone.eventing.importWidget(widgetList[1].id,function (prox) {
-                    var widget = proxy.sendMessage('{addr:null}');
+            /*    
+        Ozone.eventing.getAllWidgets(function(widgetList){ //widgets on current frame
+            log("WidgetList",widgetList);
+            
+           // var proxy = Ozone.eventing.importWidget(widgetList[1].id,function (prox) {
+           //         var widget = proxy.sendMessage('{addr:null}');
                 // widget.maximize();
                 });
-        });
-          */      
+            
+       // });*/
+              
             log("Widget Ready");
             OWF.notifyWidgetReady();
         }
@@ -222,24 +263,57 @@ Ext.define('SeamlessC2.controller.Manager', {
     },
     
     loadDashboardStore:function(){
-        /* if setup for loading from json file
+        var self=this;
+        var onFailure = function(error) {
+            error(error);
+        };   
+        //load existing dashboards in the system
+        var onSuccess = function(obj) {//obj.success obj.results obj.data
+            var existing_dashs = obj.data;
+            log("OWF Dashboards", existing_dashs);
+            
+            //get the user list of dashboards this manages
+            OWF.Preferences.getUserPreference({
+                namespace: "MITRESeamlessC2",
+                name: 'MITRE.SeamlessCommander.dashboards',
+                onSuccess:function(response){   
+                    var newdashs = []; 
+                    if(response && response.value){//may be empty or not created
+                        //need to remove those dashboards that  may have been removed
+                        var user_dashs = OWF.Util.parseJson(response.value); //in user preferences               
+                    
+                        //see if current dashboard is in prefs
+                        for (var i = 0; i < existing_dashs.length; i++) {
+                            var exist_dash_guid = existing_dashs[i].guid;
+                            for(var j=0;j<user_dashs.length;j++){
+                                var user_dash_guid = user_dashs[j].guid;
+                                if(user_dash_guid == exist_dash_guid)
+                                    newdashs.push(user_dashs[j]);
+                            }
+                        }                       
+                    }
+                    self.onDashboardStoreLoadFromPrefs(newdashs,self);                    
+                } ,
+                onFailure:onFailure
+            });
+            
+        };           
+                
+        Ozone.pref.PrefServer.findDashboards({
+            onSuccess:onSuccess,
+            onFailure:onFailure
+        });
+    /* if setup for loading from json file
         var store =  this.getDashboardStore();
         
          store.load({
             callback: this.onDashboardStoreLoad,
             scope: this
         });*/
-        var self=this;
-        OWF.Preferences.getUserPreference({
-            namespace: "MITRESeamlessC2",
-            name: 'MITRE.SeamlessCommander.dashboards',
-            onSuccess:function(response){
-                self.onDashboardStoreLoadFromPrefs(response,self);
-            } ,
-            onFailure:error
-        });
+        
     },
     //load in dynamic names for the dashboard menu from the store
+    
     onDashboardStoreLoad: function(records, operation, success) {
         var picker_menu = Ext.getCmp("dashpicker_btn_menu");
         var self = this;
@@ -259,16 +333,33 @@ Ext.define('SeamlessC2.controller.Manager', {
        
         log("Dashboard load",records);
     },
-    onDashboardStoreLoadFromPrefs:function (response,self) {
+    onDashboardCreate:function(btn, e, eOpts){
+        log("Dashboard Create");
+        var widget = null;
+        for(var i=0;i<this.system_widgets.length;i++){
+            var w = this.system_widgets[i];
+            if(w.value.namespace == DASHBOARDMAKER_WIDGET){
+                widget = w;
+                break;
+            }
+        };
+        if(widget == null){
+            Ext.MessageBox.alert("The " +DASHBOARDMAKER_WIDGET +" widget has not been loaded into the system.");//from environment.js
+            return;
+        }
+        //launch it
+        this.launchWidget(widget.path,"Dashboard Selector",{});
+        
+    },
+    onDashboardStoreLoadFromPrefs:function (dashboards,self) {
         var dashguid = window.parent.location.href.replace(OWF.getContainerUrl()+"/#guid=","");
-        if(response.value) {
-            var data = OWF.Util.parseJson(response.value);
-            self.dashboards = data;
+        if(dashboards) {
             
+            self.dashboards = dashboards;            
             //see if current dashboard is in prefs
             var found=false;
-            for(var i=0;i<data.length;i++){
-                var dash = data[i];
+            for(var i=0;i<dashboards.length;i++){
+                var dash = dashboards[i];
                 if(dash.guid == dashguid) found =true;
             }
             if(!found){
@@ -277,7 +368,7 @@ Ext.define('SeamlessC2.controller.Manager', {
                     name:window.parent.document.title,
                     guid:dashguid
                 });
-                self.saveDashboardToPrefs();
+                self.saveDashboardToPrefs();//add to the list
             }
         }else{
             log("No dashboards in user preferences");           
@@ -313,8 +404,7 @@ Ext.define('SeamlessC2.controller.Manager', {
                     //Ext.MessageBox.confirm('Confirm', 'Are you sure ?', function(btn){
                     //  if(btn === 'yes'){
                     window.parent.location.href= url ;
-                    window.parent.location.reload(true);
-                                      
+                    window.parent.location.reload(true);                                      
                 },
                 onFailure:function(a){
                     error("Set Preferences Error",a);
@@ -362,12 +452,11 @@ Ext.define('SeamlessC2.controller.Manager', {
     updateOWFWidgetList:function(){
         var self = this;
 
+        //get listing off all ozone widgets registered in the system
         //Launch Widget https://github.com/ozoneplatform/owf/wiki/OWF-7-Developer-Widget-Launcher-API
         OWF.Preferences.findWidgets({ //https://localhost:8443/owf/prefs/widget/listUserAndGroupWidgets
             searchParams: {
-                widgetName: '' // show all
-            //widgetName:  "Channel Listener"
-            //universalName: 'org.owfgoss.owf.examples.NYSE', //defined in descriptor file
+                widgetName: '' // show all  //widgetName:  "Channel Listener"  //universalName: 'org.owfgoss.owf.examples.NYSE', //defined in descriptor file
             },
             onSuccess: function(results) {
                 var guid = null;
@@ -376,86 +465,17 @@ Ext.define('SeamlessC2.controller.Manager', {
                     log("No results");
                 }else if(results.length== 1){
                     log("One Result: "+results[0].path);
-
                 }else{
-                    for(var i=0;i<results.length;i++){
-                        //log("Result: "+results[i].value.namespace,results[i]);
-                        };
+                    // for(var i=0;i<results.length;i++){log("Result: "+results[i].value.namespace,results[i]);};
                     log("system widgets",results);
                 }
                 self.system_widgets = results;
-                
-
-                // self.launchWidget(results[0].id,"test",{});
-                var widgetConfig = self.createWidgetConfig(results[23].value);
-                widgetConfig = Ext.Object.merge(widgetConfig, {
-                    width: 500,
-                    height: 500,
-                    x: 0,
-                    y: 0,
-                    active: true,
-                    floatingWidget: true
-                });
-            //var widget = Ext.widget('widgetwindow', widgetConfig);
-            // widget.show();
-            // widget.model.get('minimized') && widget.minimize();
-            // OWF.Container.State.registerHandler(widget.itemId);
             } ,
             onFailure: function(err,status){
                 log("getOWFWidgetList error! Status Code: " + status
                     + ". Error message: " + err);
             }
         });
-    },
-    createWidgetConfig: function(model, instanceId, launchData) {
-        var me = this,
-        widgetCfg;
-
-        instanceId = guid.util.guid();
-        widgetCfg = Ext.JSON.decode($(window).attr("name")); //get existing info
-
-        //var dash = OWF.getContainerName();
-        var paneid = Ext.JSON.decode(OWF.getIframeId()).id;
-        // var dashguid = OWF.getContainerName();
-        //url
-
-        widgetCfg =  Ext.Object.merge(widgetCfg,{
-            id: instanceId,
-            itemId: guid.util.guid(),
-
-            isWidget: true,
-
-            model: model, // can be widget defination or state model (page refresh)
-            pane: document.body,
-            dashboard: "Sample",
-
-            paneGuid: paneid,
-            dashboardGuid:"f4a334dc-e334-46b5-af0b-e0e69ae359db",
-            uniqueId: instanceId,
-            universalName: model.universalName,
-            widgetGuid: model.widgetGuid || instanceId ,
-            widgetStateContainer: this.widgetStateContainer || null,
-
-            name: model.name,
-            title: model.name,
-            icon: encodeURI(decodeURI(model.headerIcon)),
-
-            singleton: model.singleton,
-            background: model.background,
-
-            //     statePosition: ++this.statePositionCount,
-
-            launchData: launchData || model.launchData || null,
-
-            intentConfig: model.intentConfig || null,
-            url:model.url,
-            //    deferred: $.Deferred(),
-
-            listeners: {}
-        });
-
-
-        return widgetCfg;
     },
     launchWidget:function(widget_guid,title,data,ret_funct){
         if(widget_guid != null){
@@ -470,29 +490,10 @@ Ext.define('SeamlessC2.controller.Manager', {
                 log(response);
                 var ow= Ext.JSON.decode(OWF.getIframeId());
                 var guid = response.uniqueId;
-
-                OWF.Preferences.getWidget({
-                    widgetId: guid,
-                    onSuccess: function(result) {
-                        scope.guid = result.path;
-                    },
-                    onFailure: function(err) { /* No op */
-                        log(err);
-                    }
-                });
-                ret_funct(response);
+                if(ret_funct) ret_funct(response);
             });
         }else{
             error("Launch Widget failed for guid:"+widget_guid,data);
-        }
-    },
-    addSelectionListeners:function(listener){
-        this.selection_listeners.push(listener);
-    },
-    notifySelectionListeners:function(recommendations,data){
-        for(i in this.selection_listeners){
-            var listener = this.selection_listeners[i];
-            listener(recommendations,data);
         }
     },
     getWidgetState:function(){

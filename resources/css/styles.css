@@ -18,7 +18,9 @@
     background-color: #000;
     color:#fff;
 }
-
+.x-btn-center span{
+    color:#fff !important;
+}
 .x-btn-default-small{
     background-color: #000;
     color:#fff;

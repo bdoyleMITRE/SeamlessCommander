@@ -1,11 +1,16 @@
+Ext.define('SeamlessC2.view.Manager.DashCreateBtn', {
+    extend: 'Ext.Button',    
+    alias: 'widget.dashpicker_createbtn',
+    text: 'Create New',
+    handler: function() {
+        //log("Create Button Pressed");
+    }
+});
 
 Ext.define('SeamlessC2.view.Manager.DashPickerView', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.dashpicker_view',
     id:'dashpicker_view',
-    onItemCheck: function(item, checked){
-        Ext.example.msg('Item Check', 'You {1} the "{0}" menu item.', item.text, checked ? 'checked' : 'unchecked');
-    },
     width:50,
     height:40,    
     items: [
@@ -18,7 +23,7 @@ Ext.define('SeamlessC2.view.Manager.DashPickerView', {
         {
             id:"dashpicker_btn_menu",//used to populate in controller
             items:[
-            //'<b class="menu-title">Choose a Dashboard</b>',                    
+                {xtype:'dashpicker_createbtn'}
             ]
         }
     }

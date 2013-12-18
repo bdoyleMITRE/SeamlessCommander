@@ -8,7 +8,7 @@ var initSeamlessC2 = function(){
 
         appFolder: 'app',
         controllers: [
-        'Manager','Tailor'
+        'Manager'
         ],
         launch: function() {            
                     
