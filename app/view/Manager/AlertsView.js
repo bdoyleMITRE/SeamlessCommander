@@ -17,8 +17,7 @@ Ext.define('SeamlessC2.view.Manager.AlertsView', {
         menu:
         {
             id:"alerts_btn_menu",//used to populate in controller
-            items:[
-                          
+            items:[                         
             ]
         }
     }

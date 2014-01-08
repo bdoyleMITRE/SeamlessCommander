@@ -1,5 +1,5 @@
 .dashpicker_btn_img {
-    background-image: url('../images/view.png') !important;
+    background-image: url('../images/binoculars32.png') !important;
 }
 
 .alerts_btn_img {
@@ -8,6 +8,7 @@
 
 .toolbar_view{
     padding:1px;
+    background-color:#bbb;
 }
 .content_view{
 }

@@ -14,7 +14,7 @@ Ext.define('SeamlessC2.view.Manager.MainView', {
     },
     //autoShow: true,
     layout: {
-        type: 'vbox'
+        type: 'hbox'
     },
     items: [
     {xtype: 'toolbar_view'},
