@@ -1,0 +1,12 @@
+{
+    'success': true, 
+    'root': 
+        [
+            { 'text': "detention", 'leaf': true },
+            { 'text': "homework",  'children': [
+                { 'text': "book report", 'leaf': true },
+                { 'text': "alegrbra", 'leaf': true}
+            ] },
+            { 'text': "buy lottery tickets", 'leaf': true }
+        ]    
+}

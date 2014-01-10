@@ -5,6 +5,7 @@ var TAILOR_URL = LOCAL_8443_URL+"SeamlessCommander/data/";// "https://tinker.mit
 //uses proxy webapp from https://github.com/mitre/HTTP-Proxy-Servlet
 var SMARTCOW_URL = "https://localhost:8443/proxy_http/ProxyServlet?http://scout2.mitre.org:8080/cow-server/"; //http://scout2.mitre.org:8080/cow-server/";
 var DASHBOARDMAKER_WIDGET= "DashboardMaker"; // the dashboard maker namespace registered in OWF widgets
+var DATA_SELECTOR_WIDGET= "DataSelector"; // the dataselector namespace registered in OWF widgets
 
 var DEBUG_LOCAL = true;
 var LOGGER_ENABLED = false;

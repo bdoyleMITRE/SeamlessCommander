@@ -1,6 +1,9 @@
 .dashpicker_btn_img {
     background-image: url('../images/binoculars32.png') !important;
 }
+.datasource_btn_img {
+    background-image: url('../images/folder32.png') !important;
+}
 
 .alerts_btn_img {
     background-image: url('../images/alert_empty.png') !important;
@@ -11,13 +14,14 @@
     background-color:#bbb;
 }
 .content_view{
+    
 }
 
 
 /*THEME DEFAULTS*/
 .x-panel-body-default{
-    background-color: #000;
-    color:#fff;
+    /*background-color: #fff;
+    color:#000;*/
 }
 .x-btn-center span{
     color:#fff !important;

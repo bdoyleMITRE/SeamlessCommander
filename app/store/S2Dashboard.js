@@ -1,7 +1,8 @@
-Ext.define('SeamlessC2.store.Dashboard', {
+Ext.define('SeamlessC2.store.S2Dashboard', {
     extend: 'Ext.data.Store',
-    model:'SeamlessC2.model.DashboardModel',
+    model:'SeamlessC2.model.S2DashboardModel',
     autoLoad: true,
+    storeId:'S2Dashboard',
  /*
     proxy: {
         type: 'ajax',

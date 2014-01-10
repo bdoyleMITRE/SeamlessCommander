@@ -8,7 +8,9 @@ Ext.define('SeamlessC2.view.Manager.ToolbarView', {
     defaults: {
         border:0,
         style: {
-            padding: '1px'
+            padding: '1px',
+            'background-color':'#000',
+            color:'#fff'
         }
     },
     //autoShow: true,
@@ -16,10 +18,41 @@ Ext.define('SeamlessC2.view.Manager.ToolbarView', {
         type: 'vbox'
     },
     items: [
-        {xtype: 'dashpicker_view'},
-      //  {xtype: 'smartcow_view'},
-      //  {xtype: 'datasource_view'},
-    {xtype: 'alerts_view'}
+    {
+        xtype:'button',
+        id:'dash_btn',
+        width:42,
+        height:32,
+        cls: 'dashpicker_btn_img',
+        handler: function(button,e){  
+            scope:this,
+            this.fireEvent('toolbar_tab_selected',1,this);
+        }
+    },
+    {
+        xtype:'button',
+        id:'data_btn',
+        width:42,
+        height:32,
+        cls: 'datasource_btn_img',
+        handler: function(button,e){  
+            scope:this,
+            this.fireEvent('toolbar_tab_selected',2,this);
+        }
+    },
+    {
+        xtype:'button',
+        id:'alert_btn',
+        width:42,
+        height:32,
+        cls: 'alerts_btn_img',
+        handler: function(button,e){  scope:this,
+            this.fireEvent('toolbar_tab_selected',3,this);
+        }
+    },
+    //  {xtype: 'smartcow_view'},
+    //  {xtype: 'datasource_view'},
+    //{xtype: 'alerts_view'}
            
     ]
 });
