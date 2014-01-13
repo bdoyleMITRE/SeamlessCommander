@@ -44,11 +44,14 @@ Ext.define('SeamlessC2.controller.S2Datasource', {
     onTreeSelect:function(row, record, item, index, e, eOpts){
       log("Tree row selected",record);  
     },
-    onAddDatasourceBtn:function(){
+    onAddDatasourceBtn:function(datasource){//type,source
         log("Add datasource btn pressed");
+        this.addDatasource(datasource);
+        /*
         this.application.fireEvent('launch_widget',{
             name:DATA_SELECTOR_WIDGET
         });//environment.js
+        */
     },
     addDatasource:function (data) {//name,type
         log("Add Datasource",data);

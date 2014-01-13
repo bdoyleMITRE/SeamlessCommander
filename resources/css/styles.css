@@ -4,9 +4,18 @@
 .datasource_btn_img {
     background-image: url('../images/folder32.png') !important;
 }
+.smartcow_btn_img {
+    background-image: url('../images/cow.png') !important;
+}
 
 .alerts_btn_img {
     background-image: url('../images/alert_empty.png') !important;
+}
+.alerts_btn{
+    background-color:#bbb;
+    display:block;
+    padding:10px;
+    height:50px;    
 }
 
 .toolbar_view{

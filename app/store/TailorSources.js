@@ -1,6 +1,7 @@
 Ext.define('SeamlessC2.store.TailorSources', {
     extend: 'Ext.data.Store',
     model:'SeamlessC2.model.TailorSourcesModel',
+    storeId:'TailorSources',
     autoLoad: true,
 
     proxy: {

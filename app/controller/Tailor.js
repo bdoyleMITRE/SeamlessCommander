@@ -45,8 +45,6 @@ Ext.define('SeamlessC2.controller.Tailor', {
             });
 
             var self = this;
-           
-        
         }
         log("Initialized Tailor Controller");
     },

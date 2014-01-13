@@ -84,13 +84,16 @@ Ext.define('SeamlessC2.controller.Manager', {
         this.datsource_controller = this.getController('S2Datasource');
         this.datsource_controller.init();
         var listenerCfg = {
-            'launch_widget':function(data){scope:self;self.launchWidgetCall(data)}
+            'launch_widget':function(data){
+                scope:self;
+            self.launchWidgetCall(data)
+                }
         };
         this.application.addListener(listenerCfg);
         //  this.tailor_controller.init();
         //  this.tailor_controller.init();
-        //  this.tailor_controller = this.getController('Tailor');
-        //  this.tailor_controller.init();
+        this.tailor_controller = this.getController('Tailor');
+        this.tailor_controller.init();
         //  this.smartcow_controller = this.getController('SmartCow');
         //  this.smartcow_controller.init();
         
@@ -111,11 +114,16 @@ Ext.define('SeamlessC2.controller.Manager', {
     
     //load in dynamic names for the dashboard menu
     onAlertsStoreLoad: function(records, operation, success) {
-        var picker_menu = Ext.getCmp("alerts_btn_menu");
+        var alerts_view = Ext.getCmp("alerts_view");
         var self = this;
+        /*
         Ext.each(records,function(record,id){
             log("Record:",record);
-            picker_menu.add({
+            alerts_view.add({
+                xtype:'button',
+                width:42,
+                height:32,
+                cls: 'alerts_btn',
                 text:record.get('name'),
                 checked: false,
                 group: 'theme',
@@ -125,7 +133,7 @@ Ext.define('SeamlessC2.controller.Manager', {
                     guid:record.get('guid')
                 }
             });
-        });
+        });*/
        
         log("Alerts load",records);
     },
@@ -162,7 +170,7 @@ Ext.define('SeamlessC2.controller.Manager', {
     },
     launchWidgetCall:function(data){
         var self=this;
-       log("launch widget call:"+data.name);
+        log("launch widget call:"+data.name);
         Ext.each(self.system_widgets,function(widget,id){
             if(widget.value.namespace == data.name){
                 self.launchWidget(widget.id,data.name,data.data || {});
