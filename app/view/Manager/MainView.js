@@ -1,8 +1,8 @@
 Ext.define('SeamlessC2.view.Manager.MainView', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.mainview',
-    width: 200,
-    height: 300,
+    width: 500,
+    height:65,
     //title: 'Seamless C2',
     border:0,
     
@@ -17,7 +17,6 @@ Ext.define('SeamlessC2.view.Manager.MainView', {
         type: 'hbox'
     },
     items: [
-    {xtype: 'toolbar_view'},
-    {xtype: 'content_view'} 
+    {xtype: 'toolbar_view'}
     ]
 });

@@ -1,15 +1,21 @@
+.s2_toolbar_button{
+    margin: 0 10px 0 0;
+    height:60px;
+    width:60px;
+}
+
 .dashpicker_btn_img {
-    background-image: url('../images/binoculars32.png') !important;
+    background-image: url('../images/binoculars60x60.png') !important;
 }
 .datasource_btn_img {
-    background-image: url('../images/folder32.png') !important;
+    background-image: url('../images/folder60x60.png') !important;
 }
 .smartcow_btn_img {
-    background-image: url('../images/cow.png') !important;
+    background-image: url('../images/cow60x60.png') !important;
 }
 
 .alerts_btn_img {
-    background-image: url('../images/alert_empty.png') !important;
+    background-image: url('../images/alert_empty60x60.png') !important;
 }
 .alerts_btn{
     background-color:#bbb;
@@ -36,6 +42,7 @@
     color:#fff !important;
 }
 .x-btn-default-small{
+    /*
     background-color: #000;
     color:#fff;
     -moz-border-radius: 0px;
@@ -49,6 +56,7 @@
     border-style: solid;
     background-image: none;
     background-color: #000;
+    */
     /*
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #FFF), color-stop(48%, #F9F9F9), color-stop(52%, #E2E2E2), color-stop(100%, #E7E7E7));
     background-image: -webkit-linear-gradient(top, #FFF,#F9F9F9 48%,#E2E2E2 52%,#E7E7E7);

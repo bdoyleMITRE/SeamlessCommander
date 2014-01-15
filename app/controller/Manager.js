@@ -7,16 +7,11 @@ Ext.define('SeamlessC2.controller.Manager', {
     views: [
     'Manager.MainView',
     'Manager.ToolbarView',
-    'Manager.ContentView',
     'Manager.AlertsView'
     ],
     
     system_widgets:[], //available widgets in the system
-    /*refs: [{
-        //wire up the btn to this controller
-        selector: 'dashpicker_createbtn', //view alias
-        ref: 'dashpickerCreate' //This will be used as part of the name of the getter that will be generated automatically getDashpickerCreate
-    }],*/
+    
     onLaunch: function() {//fires after everything is loaded
         var alerts =  this.getAlertsStore();
         alerts.load({
@@ -71,23 +66,29 @@ Ext.define('SeamlessC2.controller.Manager', {
             }
         }); 
     },
-    onTabSelection: function(idx,button) {
-        log(" Tab Pressed: "+idx,button);        
-        Ext.getCmp("content_view").layout.setActiveItem(idx);
+    onTabSelection: function(name) {
+        log(" Tab Pressed: "+name);        
+        if(name == 'dash'){
+            this.launchWidgetCall({name:DASHBOARD_SELECTOR_WIDGET});
+        }else if(name == 'datasource'){
+             this.launchWidgetCall({name:DATA_SELECTOR_WIDGET});
+        }else if(name == 'smartcow'){
+            
+        }else if(name == 'alerts'){
+            
+        }   
     },
     
     init: function() {
         var self = this;
         this.preInit();
-        this.dashboard_controller = this.getController('S2Dashboard');
-        this.dashboard_controller.init();        
-        this.datsource_controller = this.getController('S2Datasource');
-        this.datsource_controller.init();
+        this.datasource_controller = this.getController('S2Datasource');
+        this.datasource_controller.init();
         var listenerCfg = {
             'launch_widget':function(data){
                 scope:self;
             self.launchWidgetCall(data)
-                }
+            }
         };
         this.application.addListener(listenerCfg);
         //  this.tailor_controller.init();
@@ -102,7 +103,7 @@ Ext.define('SeamlessC2.controller.Manager', {
             //'#dash_btn': {click: self.onButton},
             'toolbar_view button':{
                 toolbar_tab_selected:this.onTabSelection
-            }            
+            }
         });
             
         if(OWF.Util.isRunningInOWF()) {
@@ -139,6 +140,9 @@ Ext.define('SeamlessC2.controller.Manager', {
     },
     alertSelectHandler :function(menuitem,success){
         log("AlertSelected "+success,menuitem);
+    },
+    addMessage:function(str){
+        $("#s2_messages-body").prepend(str);
     },
     updateOWFWidgetList:function(){
         var self = this;

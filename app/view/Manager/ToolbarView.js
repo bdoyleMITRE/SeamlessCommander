@@ -1,8 +1,8 @@
 Ext.define('SeamlessC2.view.Manager.ToolbarView', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.toolbar_view',
-    width: 40,
-    height: 300,
+    width: 500,
+    height: 65,
     cls:"toolbar_view",
     border:0,
     defaults: {
@@ -13,55 +13,52 @@ Ext.define('SeamlessC2.view.Manager.ToolbarView', {
     },
     //autoShow: true,
     layout: {
-        type: 'vbox'
+        type: 'hbox'
     },
     items: [
     {
         xtype:'button',
         id:'dash_btn',
-        width:42,
-        height:40,
-        cls: 'dashpicker_btn_img',
+        cls: 'dashpicker_btn_img s2_toolbar_button',
         handler: function(button,e){  
             scope:this,
-            this.fireEvent('toolbar_tab_selected',1,this);
+            this.fireEvent('toolbar_tab_selected','dash',this);
         }
     },
     {
         xtype:'button',
         id:'data_btn',
-        width:42,
-        height:40,
-        cls: 'datasource_btn_img',
+        cls: 'datasource_btn_img s2_toolbar_button',
         handler: function(button,e){  
             scope:this,
-            this.fireEvent('toolbar_tab_selected',2,this);
+            this.fireEvent('toolbar_tab_selected','datasource',this);
         }
     },
      {
         xtype:'button',
         id:'cow_btn',
-        width:42,
-        height:40,
-        cls: 'smartcow_btn_img',
+        cls: 'smartcow_btn_img s2_toolbar_button',
         handler: function(button,e){  
             scope:this,
-            this.fireEvent('toolbar_tab_selected',3,this);
+            this.fireEvent('toolbar_tab_selected','smartcow',this);
         }
     },
     {
         xtype:'button',
         id:'alert_btn',
-        width:42,
-        height:40,
-        cls: 'alerts_btn_img',
+        cls: 'alerts_btn_img s2_toolbar_button',
         handler: function(button,e){  scope:this,
-            this.fireEvent('toolbar_tab_selected',4,this);
+            this.fireEvent('toolbar_tab_selected','alerts',this);
         }
     },
-    //  {xtype: 'smartcow_view'},
-    //  {xtype: 'datasource_view'},
-    //{xtype: 'alerts_view'}
-           
+    {
+        id:'s2_messages',
+        width:200,
+        height:60,
+        autoScroll:true,
+        
+        html:"<h2>Welcome to Seamless C2</h2>"
+    }
+   
     ]
 });
