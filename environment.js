@@ -3,9 +3,10 @@ var LOCAL_8443_URL = "https://localhost:8443/";
 var LOCAL_8080_URL = "http://localhost:8080/";
 var TAILOR_URL = LOCAL_8443_URL+"SeamlessCommander/data/";// "https://tinker.mitre.org:8443/";  URL to the TAILOR service
 //uses proxy webapp from https://github.com/mitre/HTTP-Proxy-Servlet
-var SMARTCOW_URL = "https://localhost:8443/proxy_http/ProxyServlet?http://scout2.mitre.org:8080/cow-server/"; //http://scout2.mitre.org:8080/cow-server/";
 var DASHBOARD_SELECTOR_WIDGET= "DashboardSelector"; // the dashboard selector namespace registered in OWF widgets
 var DATA_SELECTOR_WIDGET= "DataSelector"; // the dataselector namespace registered in OWF widgets
+var SMARTCOW_WIDGET="S2SmartCow";
+var ALERTS_WIDGET="S2Alerts";
 
 var DEBUG_LOCAL = true;
 var LOGGER_ENABLED = false;

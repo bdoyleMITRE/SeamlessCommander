@@ -2,25 +2,21 @@
 Ext.define('SeamlessC2.controller.Manager', {
     extend: 'Ext.app.Controller',
 
-    stores: ['Alerts'],
-    models:['AlertsModel'],
     views: [
     'Manager.MainView',
-    'Manager.ToolbarView',
-    'Manager.AlertsView'
+    'Manager.ToolbarView'
     ],
     
+    //fields
     system_widgets:[], //available widgets in the system
+    OWFuser:null,
     
     onLaunch: function() {//fires after everything is loaded
-        var alerts =  this.getAlertsStore();
-        alerts.load({
-            callback: this.onAlertsStoreLoad,
-            scope: this
-        });
+    
         log("SeamlessC2 Commander Launch Complete");
     },
     preInit:function(){
+        var self=this;
         //When the Dashboard is created and the page is redirected to this with the widget minimized. But a refresh fixes it.
         //So the dashboard_controller sets a value of new dashboard guid in user preference
         //if that value is there, then this widget refreshes page and clears the pref
@@ -65,36 +61,28 @@ Ext.define('SeamlessC2.controller.Manager', {
                 error("Set Preferences",a);
             }
         }); 
-    },
-    onTabSelection: function(name) {
-        log(" Tab Pressed: "+name);        
-        if(name == 'dash'){
-            this.launchWidgetCall({name:DASHBOARD_SELECTOR_WIDGET});
-        }else if(name == 'datasource'){
-             this.launchWidgetCall({name:DATA_SELECTOR_WIDGET});
-        }else if(name == 'smartcow'){
-            
-        }else if(name == 'alerts'){
-            
-        }   
-    },
-    
+        OWF.Preferences.getCurrentUser({
+                onSuccess: function (response) {
+                    if(response) {
+                        self.OWFuser = response.currentUserName;
+                        log("OWFUser",self.OWFuser);
+                    }
+                }
+            });
+    },        
     init: function() {
         var self = this;
         this.preInit();
         this.datasource_controller = this.getController('S2Datasource');
         this.datasource_controller.init();
-        var listenerCfg = {
+        var listenerCfg = {//listen for launch_widget events
             'launch_widget':function(data){
                 scope:self;
             self.launchWidgetCall(data)
             }
         };
         this.application.addListener(listenerCfg);
-        //  this.tailor_controller.init();
-        //  this.tailor_controller.init();
-        this.tailor_controller = this.getController('Tailor');
-        this.tailor_controller.init();
+        
         //  this.smartcow_controller = this.getController('SmartCow');
         //  this.smartcow_controller.init();
         
@@ -112,42 +100,27 @@ Ext.define('SeamlessC2.controller.Manager', {
         log("Initialized SeamlessC2 Commander");
     },
     
+    onTabSelection: function(name) {
+        log(" Tab Pressed: "+name);        
+        if(name == 'dash'){
+            this.launchWidgetCall({name:DASHBOARD_SELECTOR_WIDGET});
+        }else if(name == 'datasource'){
+             this.launchWidgetCall({name:DATA_SELECTOR_WIDGET});
+        }else if(name == 'smartcow'){
+            this.launchWidgetCall({name:SMARTCOW_WIDGET,data:{user:this.OWFuser }});
+        }else if(name == 'alerts'){
+            this.launchWidgetCall({name:ALERTS_WIDGET});
+        }   
+    },
     
-    //load in dynamic names for the dashboard menu
-    onAlertsStoreLoad: function(records, operation, success) {
-        var alerts_view = Ext.getCmp("alerts_view");
-        var self = this;
-        /*
-        Ext.each(records,function(record,id){
-            log("Record:",record);
-            alerts_view.add({
-                xtype:'button',
-                width:42,
-                height:32,
-                cls: 'alerts_btn',
-                text:record.get('name'),
-                checked: false,
-                group: 'theme',
-                checkHandler: self.alertSelectHandler,
-                data:{
-                    name:record.get('name'),
-                    guid:record.get('guid')
-                }
-            });
-        });*/
-       
-        log("Alerts load",records);
-    },
-    alertSelectHandler :function(menuitem,success){
-        log("AlertSelected "+success,menuitem);
-    },
+   
     addMessage:function(str){
         $("#s2_messages-body").prepend(str);
     },
+    //get listing off all ozone widgets registered in the system
+    //update self.system_widgets
     updateOWFWidgetList:function(){
-        var self = this;
-
-        //get listing off all ozone widgets registered in the system
+        var self = this;        //get listing off all ozone widgets registered in the system
         //Launch Widget https://github.com/ozoneplatform/owf/wiki/OWF-7-Developer-Widget-Launcher-API
         OWF.Preferences.findWidgets({ //https://localhost:8443/owf/prefs/widget/listUserAndGroupWidgets
             searchParams: {
@@ -172,15 +145,21 @@ Ext.define('SeamlessC2.controller.Manager', {
             }
         });
     },
+    //prepares to launch a widget
+    //i.e. {name:DASHBOARD_SELECTOR_WIDGET} makes sure the widget is available in system_widgets
     launchWidgetCall:function(data){
         var self=this;
         log("launch widget call:"+data.name);
+        var launch = false;
         Ext.each(self.system_widgets,function(widget,id){
             if(widget.value.namespace == data.name){
                 self.launchWidget(widget.id,data.name,data.data || {});
+                launch=true;
             }
         });
+        if(!launch){error("Lauch widget failed for widget:"+data.name,data);}
     },
+    //lauches a widget
     launchWidget:function(widget_guid,title,data,ret_funct){
         if(widget_guid != null){
             var dataString = OWF.Util.toString(data);
@@ -200,6 +179,7 @@ Ext.define('SeamlessC2.controller.Manager', {
             error("Launch Widget failed for guid:"+widget_guid,data);
         }
     },
+    //returns widget state
     getWidgetState:function(){
         //close widget https://github.com/ozoneplatform/owf/wiki/OWF-7-Developer-Widget-State-API https://github.com/ozoneplatform/owf/blob/master/web-app/examples/walkthrough/widgets/EventMonitor.html
         var eventMonitor = {};
@@ -218,6 +198,7 @@ Ext.define('SeamlessC2.controller.Manager', {
     close:function(){
         this.getWidgetState().closeWidget();
     },
+    //setup OWF specifics
     initOWF:function(){
         this.updateOWFWidgetList(); // load the available widgets in system
             
@@ -295,28 +276,6 @@ Ext.define('SeamlessC2.controller.Manager', {
          */
 
 
-
-
-        // -----------------------------------
-        // Add print button to widget chrome
-        // -----------------------------------
-        /*
-        OWF.Chrome.insertHeaderButtons({
-            items: [
-                {
-                    xtype: 'widgettool',
-                    type: 'print',
-                    itemId:'print',
-                    tooltip:  {
-                      text: 'Print Directions!'
-                    },
-                    handler: function(sender, data) {
-                        Map.toggleMapPrintView();
-                    }
-                }
-            ]
-        });
-*/
 
 
 
